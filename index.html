@@ -9,6 +9,8 @@
   
   <!-- Theme: Vue -->
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+  <!-- KaTeX CSS for LaTeX typography -->
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
   
   <!-- Custom Styling for Chemical Industry Professional Theme -->
   <style>
@@ -187,10 +189,59 @@
       border: 1px solid #e2e8f0;
       border-radius: 6px;
     }
+
+    /* Math Formulas Display Optimization */
+    mjx-container {
+      display: inline-grid;
+      overflow-x: auto;
+      overflow-y: hidden;
+      max-width: 100%;
+      vertical-align: middle;
+    }
+    mjx-container[jax="CHTML"][display="true"] {
+      display: block;
+      text-align: center;
+      margin: 1.4rem 0 !important;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 0.6rem 0;
+      background: #f8fafc;
+      border-radius: 6px;
+      border: 1px solid #edf2f7;
+    }
+    .katex-display {
+      margin: 1.4rem 0 !important;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 0.6rem 0;
+      background: #f8fafc;
+      border-radius: 6px;
+      border: 1px solid #edf2f7;
+    }
   </style>
 </head>
 <body>
   <div id="app">正在加载《化工行业采购管理》专著，请稍候...</div>
+  
+  <!-- MathJax Configuration (Must precede MathJax script) -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true,
+        processEnvironments: true
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      startup: {
+        typeset: false
+      }
+    };
+  </script>
+
+  <!-- Docsify Configuration -->
   <script>
     window.$docsify = {
       name: '化工行业采购管理',
@@ -201,6 +252,10 @@
       coverpage: true,
       auto2top: true,
       homepage: 'README.md',
+      latex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
       search: {
         maxAge: 86400000,
         paths: 'auto',
@@ -218,19 +273,37 @@
         buttonText: '复制',
         errorText: '错误',
         successText: '已复制'
-      }
+      },
+      plugins: [
+        function(hook, vm) {
+          hook.doneEach(function() {
+            // Re-typeset MathJax on route changes if MathJax is available
+            if (window.MathJax && window.MathJax.typesetPromise) {
+              window.MathJax.typesetPromise().catch(function(err) {
+                console.warn('MathJax typesetting error:', err);
+              });
+            }
+          });
+        }
+      ]
     }
   </script>
+
   <!-- Docsify Core v4 -->
   <script src="//cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js"></script>
-  <!-- Full-text Search Plugin -->
+  
+  <!-- Math Display Engines: MathJax v3 -->
+  <script src="//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  
+  <!-- docsify-latex plugin for LaTeX & MathJax integration -->
+  <script src="//cdn.jsdelivr.net/npm/docsify-latex@0"></script>
+  
+  <!-- Other Plugins -->
   <script src="//cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.min.js"></script>
-  <!-- Copy Code Plugin -->
   <script src="//cdn.jsdelivr.net/npm/docsify-copy-code/dist/docsify-copy-code.min.js"></script>
-  <!-- Pagination Plugin -->
   <script src="//cdn.jsdelivr.net/npm/docsify-pagination/dist/docsify-pagination.min.js"></script>
-  <!-- Zoom Image Plugin -->
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
+  
   <!-- Code Highlighting -->
   <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-bash.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-python.min.js"></script>
